@@ -3,7 +3,6 @@ import { MulticallWrapper } from 'ethers-multicall-provider'
 import daiAbi from "../abi/ERC20.json"
 
 export const SepoliaChainId = 11155111
-// const ScrollSepoliaChainId = "sepolia"
 
 
 const tokenContract = {
@@ -11,15 +10,13 @@ const tokenContract = {
   abi: daiAbi,
 };
 
-/* const tokenContractScroll = {
-  address: "0x7A422a39583c0D84c030bAA9F0c3BC71e3B4d409",
-  abi: daiAbi,
-}; */
 
+// get Contract instance for readonly
 export const getTokenContract = (provider: AbstractProvider) => {
   return new Contract(tokenContract.address, tokenContract.abi, provider);
 }
 
+// get Contract instance where you can write
 export const getWriteTokenContract = (walletClient: JsonRpcSigner) => {
   return new Contract(tokenContract.address, tokenContract.abi, walletClient);  
 }
@@ -31,6 +28,7 @@ export const getProvider = () => {
   return provider
 }
 
+// Provider to make batch calls
 export const getMulticallProvider = () => {
   const infuraProvider = new ethers.InfuraProvider(SepoliaChainId, process.env.REACT_APP_INFURA_ID)
   const multiCallProvider = MulticallWrapper.wrap(infuraProvider)

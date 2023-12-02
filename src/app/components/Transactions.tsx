@@ -55,29 +55,12 @@ export const Transactions = () => {
   }
 
   const mint = async () => {
-    if (signer) {
-      try {
-        const daiContract = getWriteTokenContract(signer)
-        const tx = await daiContract.mint(signer.address, mintAmount)
-        await tx.wait()
-      } catch(ex) {
-        console.log(ex)
-      }
-    }
+    
   }
 
   const transferTo = async () => {
-    if (signer) {
-      try {
-        const daiContract = getWriteTokenContract(signer)
-        const tx = await daiContract.transfer(toAddress, transferAmount)
-        await tx.wait()
-      } catch(ex) {
-        console.log(ex)
-      }
-    }
+    
   }
-
 
   return (
     <div className="box-border">

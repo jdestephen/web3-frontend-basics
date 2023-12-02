@@ -29,16 +29,19 @@ export const ReadLogs = () => {
             <th>From</th>
             <th>To</th>
             <th>Address</th>
+            <th>BN</th>
           </tr>
           <tbody>
             {transfers.map((transfer: any, key: number) => {
-              const amount = AbiCoder.defaultAbiCoder().decode(["uint256"], transfer.data);
+              const amount = AbiCoder.defaultAbiCoder().decode(["uint256"], transfer.data)
+              // console.log("transfer: ", transfer)
               return (
                 <tr key={key.toString()}>
                   <td>{key + 1}</td>
                   <td>{makeShortAddress(transfer.args[0])}</td>
                   <td>{makeShortAddress(transfer.args[1])}</td>
                   <td>{ethers.formatUnits(amount[0])}</td>
+                  <td>{transfer.blockNumber}</td>
                 </tr>
               )
             })}
