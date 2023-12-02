@@ -67,3 +67,7 @@ td {
   border-radius: 5px;
   background-color: rgb(232, 232, 232);
 }
+
+.text-red {
+  color: red;
+}

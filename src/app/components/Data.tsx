@@ -1,10 +1,10 @@
 import { useState } from "react"
 import { ethers } from 'ethers'
-import { getDaiContract, getMulticallProvider, getProvider } from "../utils"
+import { getTokenContract, getMulticallProvider, getProvider } from "../utils"
 
 
 export const Data = () => {
-  const address = "0xd4fa23307a181B9ca567886eB5bCd5c8f8f8bB3E"
+  const userAddress = "0x9B733ed4CDb40E41eeB4F79ABB0EA0812Cd1dd5f"
   const [daiBalance, setDaiBalance] = useState("0.00")
   const [daiDecimals, setDaiDecimals] = useState("0")
   const [daiTotalSupply, setDaiTotalSupply] = useState("0.00")
@@ -12,8 +12,8 @@ export const Data = () => {
   const loadData = async () => {
     const provider = getProvider()
 
-    const daiContract = getDaiContract(provider)
-    const balance = await daiContract.balanceOf(address)
+    const daiContract = getTokenContract(provider)
+    const balance = await daiContract.balanceOf(userAddress)
     const decimals = await daiContract.decimals()
     const totalSupply = await daiContract.totalSupply()
 
@@ -24,9 +24,9 @@ export const Data = () => {
   
   const loadDataMulticall = async () => {
     const provider = getMulticallProvider()
-    const daiContract = getDaiContract(provider)
+    const daiContract = getTokenContract(provider)
     const [balance, decimals, totalSupply] = await Promise.all([
-      daiContract.balanceOf(address),
+      daiContract.balanceOf(userAddress),
       daiContract.decimals(),
       daiContract.totalSupply(),
     ])

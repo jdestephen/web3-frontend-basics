@@ -1,7 +1,7 @@
 import { useState,  } from "react"
 import { ethers, JsonRpcSigner, ZeroAddress } from "ethers"
 
-import { getWriteDaiContract } from "../utils"
+import { getWriteTokenContract, SepoliaChainId } from "../utils"
 
 
 export const Transactions = () => { 
@@ -9,6 +9,7 @@ export const Transactions = () => {
   const [mintAmount, setMintAmount] = useState(0n)
   const [toAddress, setToAddress] = useState(ZeroAddress)
   const [transferAmount, setTransferAmount] = useState(0n)
+  const [networkError, setNetworkError] = useState("")
 
   const onMintAmountChange = (value: string) => {
     if (value.trim() !== "") {
@@ -43,14 +44,20 @@ export const Transactions = () => {
     if (walletProvider) { 
       const newSigner = await walletProvider.getSigner()
       setSigner(newSigner)
-
+      
+      const currentNetwork = await walletProvider.getNetwork()
+      if (SepoliaChainId !== Number(currentNetwork.chainId)) {
+        setNetworkError("Red incorrecta")
+      } else {
+        setNetworkError("")
+      }
     }      
   }
 
   const mint = async () => {
     if (signer) {
       try {
-        const daiContract = getWriteDaiContract(signer)
+        const daiContract = getWriteTokenContract(signer)
         const tx = await daiContract.mint(signer.address, mintAmount)
         await tx.wait()
       } catch(ex) {
@@ -62,7 +69,7 @@ export const Transactions = () => {
   const transferTo = async () => {
     if (signer) {
       try {
-        const daiContract = getWriteDaiContract(signer)
+        const daiContract = getWriteTokenContract(signer)
         const tx = await daiContract.transfer(toAddress, transferAmount)
         await tx.wait()
       } catch(ex) {
@@ -79,9 +86,12 @@ export const Transactions = () => {
           {!signer ? "Conectar Billetera" : "Conectado"}
         </button>
         {signer && (
-          <p>
-            Cuenta: {signer.address}
-          </p>
+          <>
+            <p>Cuenta: {signer.address}</p>
+            {networkError !== "" && (
+              <p className="text-red">{networkError}</p>
+            )}
+          </>  
         )}
       </div>
       <div className="flex flex-col justify-items-center space-y-2 my-8">

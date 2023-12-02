@@ -1,17 +1,16 @@
-import { useState } from "react"
-import { ethers } from 'ethers'
-import { getDaiContract, getMulticallProvider, makeShortAddress } from "../utils"
-import { AbiCoder } from "ethers"
+import { useState } from 'react'
+import { ethers, AbiCoder } from 'ethers'
+import { getTokenContract, getMulticallProvider, makeShortAddress } from '../utils'
 
 
 export const ReadLogs = () => {
   const [transfers, setTransfers] = useState<any>()
 
   const loadData = async () => {
-    const addressFrom = "0xd4fa23307a181B9ca567886eB5bCd5c8f8f8bB3E"
+    const fromAddress = "0x9B733ed4CDb40E41eeB4F79ABB0EA0812Cd1dd5f"
     const provider = getMulticallProvider()
-    const daiContract = getDaiContract(provider)
-    const transfersQuery = daiContract.filters.Transfer(addressFrom, null)
+    const daiContract = getTokenContract(provider)
+    const transfersQuery = daiContract.filters.Transfer(fromAddress, null)
     const [transfersData] = await Promise.all([
       daiContract.queryFilter(transfersQuery)
     ])
