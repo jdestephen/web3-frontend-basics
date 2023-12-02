@@ -10,11 +10,31 @@ export const Data = () => {
   const [daiTotalSupply, setDaiTotalSupply] = useState("0.00")
 
   const loadData = async () => {
+    const provider = getProvider()
+    const tokenContract = getTokenContract(provider)
 
+    const balance = await tokenContract.balanceOf(userAddress)
+    const decimals = await tokenContract.decimals()
+    const totalSupply = await tokenContract.totalSupply()
+
+    setDaiBalance(ethers.formatUnits(balance, decimals))
+    setDaiDecimals(decimals.toString())
+    setDaiTotalSupply(ethers.formatEther(totalSupply))
   }
   
   const loadDataMulticall = async () => {
-    
+    const provider = getMulticallProvider()
+    const tokenContract = getTokenContract(provider)
+
+    const [balance, decimals, totalSupply] = await Promise.all([
+      await tokenContract.balanceOf(userAddress),
+      await tokenContract.decimals(),
+      await tokenContract.totalSupply()
+    ])
+
+    setDaiBalance(ethers.formatUnits(balance, decimals))
+    setDaiDecimals(decimals.toString())
+    setDaiTotalSupply(ethers.formatEther(totalSupply))
   }
 
   return (
@@ -31,7 +51,7 @@ export const Data = () => {
         <h4>Total Supply:</h4>
         <span>{daiTotalSupply}</span>
       </div>
-      <button onClick={() => loadData()}>
+      <button onClick={() => loadDataMulticall()}>
         Leer Datos
       </button>
     </div>

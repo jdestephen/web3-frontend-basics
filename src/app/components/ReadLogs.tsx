@@ -34,7 +34,7 @@ export const ReadLogs = () => {
           <tbody>
             {transfers.map((transfer: any, key: number) => {
               const amount = AbiCoder.defaultAbiCoder().decode(["uint256"], transfer.data)
-              // console.log("transfer: ", transfer)
+              console.log("transfer: ", transfer)
               return (
                 <tr key={key.toString()}>
                   <td>{key + 1}</td>

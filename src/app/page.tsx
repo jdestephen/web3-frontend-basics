@@ -11,8 +11,11 @@ export default function Home() {
       <div className="flex space-y-10 p-4">
         <div className="flex min-h-screen flex-col space-y-10 p-4">
           <Data />
+          <Transactions />
         </div>
-        <div />
+        <div>
+          <ReadLogs />
+        </div>
       </div>  
     </main>
   )

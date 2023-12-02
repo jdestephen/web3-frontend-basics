@@ -55,11 +55,27 @@ export const Transactions = () => {
   }
 
   const mint = async () => {
-    
+    try {
+      if (signer) {
+        const tokenContract = getWriteTokenContract(signer)
+        const tx = await tokenContract.mint(signer.address, mintAmount)
+        await tx.wait()
+      }
+    } catch (ex) {
+      console.log(ex)
+    }
   }
 
   const transferTo = async () => {
-    
+    try {
+      if (signer) {
+        const tokenContract = getWriteTokenContract(signer)
+        const tx = await tokenContract.transfer(signer.address, transferAmount)
+        await tx.wait()
+      }
+    } catch (ex) {
+      console.log(ex)
+    }
   }
 
   return (
