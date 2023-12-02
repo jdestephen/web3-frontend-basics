@@ -18,10 +18,52 @@
 
 body {
   color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
-      to bottom,
-      transparent,
-      rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb));
+  background: white
+}
+
+button {
+  background-color: rgb(2, 95, 141);
+  padding: 0.5rem;
+  border-radius: 5px;
+  color: white;
+  width: 100%;
+  margin-top: 10px;
+}
+
+#connect-wallet {
+  background-color: rgb(103, 34, 7);
+  margin-bottom: 5px;
+}
+
+h1 {
+  font-size: 1.5rem;
+}
+
+h4 {
+  font-size: 1.2rem;
+}
+
+span {
+  font-size: 1.3rem;
+}
+
+input {
+  width: 100%;
+  text-align: right;
+  font-size: 1.1rem;
+}
+
+table {
+  width: 100%;
+}
+
+td {
+  text-align: center;
+}
+
+.box-border {
+  width: 30rem;
+  padding: 0.4rem 1rem;
+  border-radius: 5px;
+  background-color: rgb(232, 232, 232);
 }
