@@ -12,9 +12,7 @@ export default function Home() {
         <div className="flex min-h-screen flex-col space-y-10 p-4">
           <Data />
         </div>
-        <div>
-          <ReadLogs />
-        </div>
+        <div />
       </div>  
     </main>
   )
