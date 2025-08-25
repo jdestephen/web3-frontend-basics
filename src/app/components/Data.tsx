@@ -1,47 +1,47 @@
-import { useState } from "react"
-import { ethers } from 'ethers'
-import { getTokenContract, getMulticallProvider, getProvider } from "../utils"
+import { useMemo } from "react"
+
+import { useAccount, useReadContracts } from "wagmi"
+import { formatUnits, zeroAddress } from "viem"
+
+import { Erc20Abi } from "@/contracts/Erc20.abi"
 
 
 export const Data = () => {
-  const userAddress = "0x9B733ed4CDb40E41eeB4F79ABB0EA0812Cd1dd5f"
-  const [daiBalance, setDaiBalance] = useState("0.00")
-  const [daiDecimals, setDaiDecimals] = useState("0")
-  const [daiTotalSupply, setDaiTotalSupply] = useState("0.00")
+  const account = useAccount()
+  const {
+    data,
+    error,
+    isPending,
+    refetch,
+  } = useReadContracts({
+    contracts: [{
+      ...Erc20Abi,
+      functionName: 'balanceOf',
+      args: [account.address || zeroAddress],
+    }, {
+      ...Erc20Abi,
+      functionName: 'decimals',
+    }, {
+      ...Erc20Abi,
+      functionName: 'totalSupply',
+    }]
+  });
 
-  const loadData = async () => {
-    const provider = getProvider()
-    const tokenContract = getTokenContract(provider)
+  const [daiBalance, daiDecimals, daiTotalSupply] = useMemo(() => { 
+    if (!data || error || isPending) return ["0.00", "0", "0.00"]
 
-    const balance = await tokenContract.balanceOf(userAddress)
-    const decimals = await tokenContract.decimals()
-    const totalSupply = await tokenContract.totalSupply()
+    const decimals = data[1].result || 18;
+    const balance = formatUnits(data[0].result || 0n, decimals);
+    const totalSupply = formatUnits(data[2].result || 0n, decimals);
 
-    setDaiBalance(ethers.formatUnits(balance, decimals))
-    setDaiDecimals(decimals.toString())
-    setDaiTotalSupply(ethers.formatEther(totalSupply))
-  }
-  
-  const loadDataMulticall = async () => {
-    const provider = getMulticallProvider()
-    const tokenContract = getTokenContract(provider)
-
-    const [balance, decimals, totalSupply] = await Promise.all([
-      await tokenContract.balanceOf(userAddress),
-      await tokenContract.decimals(),
-      await tokenContract.totalSupply()
-    ])
-
-    setDaiBalance(ethers.formatUnits(balance, decimals))
-    setDaiDecimals(decimals.toString())
-    setDaiTotalSupply(ethers.formatEther(totalSupply))
-  }
+    return [balance, decimals, totalSupply]
+  }, [data])
 
   return (
     <div className="box-border">
       <div className="flex flex-row justify-items-center justify-between space-x-4">
         <h4>Token Balance:</h4>
-        <span>{daiBalance}</span>
+        <span>{parseFloat(daiBalance).toFixed(2)}</span>
       </div>
       <div className="flex flex-row justify-items-center justify-between space-x-4">
         <h4>Decimals:</h4>
@@ -49,9 +49,9 @@ export const Data = () => {
       </div>
       <div className="flex flex-row justify-items-center justify-between space-x-4">
         <h4>Total Supply:</h4>
-        <span>{daiTotalSupply}</span>
+        <span>{parseFloat(daiTotalSupply).toFixed(2)}</span>
       </div>
-      <button onClick={() => loadDataMulticall()}>
+      <button onClick={() => refetch()}>
         Leer Datos
       </button>
     </div>

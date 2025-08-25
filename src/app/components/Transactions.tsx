@@ -1,19 +1,24 @@
 import { useState,  } from "react"
-import { ethers, JsonRpcSigner, ZeroAddress } from "ethers"
 
-import { getWriteTokenContract, SepoliaChainId } from "../utils"
+import { Erc20Abi } from "@/contracts/Erc20.abi"
+import { useAccount } from 'wagmi'
+import { useWriteContract } from 'wagmi'
+import { getAddress, isAddress, parseUnits, zeroAddress } from "viem"
+import { sepolia } from "viem/chains"
+import { SimulateTransfer } from "./Simulate"
 
 
-export const Transactions = () => { 
-  const [signer, setSigner] = useState<JsonRpcSigner>()
+export const Transactions = () => {
+  const account = useAccount()
+  const {  data: hash, isPending, writeContract } = useWriteContract() 
+
   const [mintAmount, setMintAmount] = useState(0n)
-  const [toAddress, setToAddress] = useState(ZeroAddress)
+  const [toAddress, setToAddress] = useState<string | `0x${string}`>(zeroAddress)
   const [transferAmount, setTransferAmount] = useState(0n)
-  const [networkError, setNetworkError] = useState("")
 
   const onMintAmountChange = (value: string) => {
     if (value.trim() !== "") {
-      const amount = ethers.parseEther(value)
+      const amount = parseUnits(value, 18);
       setMintAmount(amount)
     } else {
       setMintAmount(0n)
@@ -21,58 +26,47 @@ export const Transactions = () => {
   }
 
   const onAddressChange = (value: string) => {
-    if (ethers.isAddress(value) && value !== ZeroAddress) {
+    if (isAddress(value) && value !== zeroAddress) {
       setToAddress(value)
     } else {
-      setToAddress(ZeroAddress)
+      setToAddress(zeroAddress)
     }
   }
 
   const onTransferAmountChange = (value: string) => {
     if (value.trim() !== "") {
-      const amount = ethers.parseEther(value)
+      const amount = parseUnits(value, 18);
       setTransferAmount(amount)
     } else {
       setTransferAmount(0n)
     }
   }
 
-  const connectWallet = async () => {
-    // @ts-ignore
-    const walletProvider = new ethers.BrowserProvider(window.ethereum)
-    
-    if (walletProvider) { 
-      const newSigner = await walletProvider.getSigner()
-      setSigner(newSigner)
-      
-      const currentNetwork = await walletProvider.getNetwork()
-      if (SepoliaChainId !== Number(currentNetwork.chainId)) {
-        setNetworkError("Red incorrecta")
-      } else {
-        setNetworkError("")
-      }
-    }      
-  }
-
   const mint = async () => {
+    if (!account.address) return
+
     try {
-      if (signer) {
-        const tokenContract = getWriteTokenContract(signer)
-        const tx = await tokenContract.mint(signer.address, mintAmount)
-        await tx.wait()
-      }
+      writeContract({
+        ...Erc20Abi,
+        functionName: 'mint',
+        args: [account.address, mintAmount],
+      })
+
     } catch (ex) {
       console.log(ex)
     }
   }
 
   const transferTo = async () => {
+    if (!account.address) return
+
     try {
-      if (signer) {
-        const tokenContract = getWriteTokenContract(signer)
-        const tx = await tokenContract.transfer(signer.address, transferAmount)
-        await tx.wait()
-      }
+      writeContract({
+        ...Erc20Abi,
+        functionName: 'transfer',
+        args: [getAddress(toAddress), transferAmount],
+        chainId: sepolia.id,
+      })
     } catch (ex) {
       console.log(ex)
     }
@@ -80,25 +74,12 @@ export const Transactions = () => {
 
   return (
     <div className="box-border">
-      <div className="flex flex-col justify-items-center space-y-2">
-        <button id="connect-wallet" onClick={() => connectWallet()}>
-          {!signer ? "Conectar Billetera" : "Conectado"}
-        </button>
-        {signer && (
-          <>
-            <p>Cuenta: {signer.address}</p>
-            {networkError !== "" && (
-              <p className="text-red">{networkError}</p>
-            )}
-          </>  
-        )}
-      </div>
       <div className="flex flex-col justify-items-center space-y-2 my-8">
         <div className="flex flex-r ow justify-items-center space-x-4 ">
           <h4>Cantidad</h4>
           <input placeholder="0" type="number" onChange={(event) => onMintAmountChange(event.target.value)} />
         </div>
-        <button disabled={!signer} onClick={() => mint()}>
+        <button disabled={!account.isConnected || isPending} onClick={() => mint()}>
           Mint Token
         </button>
       </div>
@@ -111,9 +92,10 @@ export const Transactions = () => {
           <h4>Cantidad</h4>
           <input placeholder="0" type="number" onChange={(event) => onTransferAmountChange(event.target.value)} />
         </div>
-        <button disabled={!signer} onClick={() => transferTo()}>
+        <button disabled={!account.isConnected || isPending} onClick={() => transferTo()}>
           Transferir
         </button>
+        {/* <SimulateTransfer toAddress={getAddress(toAddress)} amount={transferAmount} /> */}
       </div>
     </div>    
   )

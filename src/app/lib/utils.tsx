@@ -1,11 +1,10 @@
-import { AbstractProvider, ethers, Contract, JsonRpcSigner } from 'ethers'
-import { MulticallWrapper } from 'ethers-multicall-provider'
-import daiAbi from "../abi/ERC20.json"
+import { createPublicClient, http } from "viem"
+import daiAbi from "../../abi/ERC20.json"
 
 export const SepoliaChainId = 11155111
 
 
-const tokenContract = {
+/* const tokenContract = {
   address: "0xDa57a11D954CCBE2e8A1eA142904a6C0F4b333c5",
   abi: daiAbi,
 };
@@ -19,6 +18,16 @@ export const getTokenContract = (provider: AbstractProvider) => {
 // get Contract instance where you can write
 export const getWriteTokenContract = (walletClient: JsonRpcSigner) => {
   return new Contract(tokenContract.address, tokenContract.abi, walletClient);  
+}
+
+export const getPublicClient = (chainId: number) => { 
+  return createPublicClient({
+    batch: {
+      multicall: true,
+    },
+    chain: chainIdToChainMap[chainId],
+    transport: http(rpcUrls[chainId])
+  })
 }
 
 export const getProvider = () => {
@@ -35,9 +44,10 @@ export const getMulticallProvider = () => {
 
   return multiCallProvider
 }
+*/
 
 export const makeShortAddress = (address: string) => {
   const shortAddress = address.slice(0, 6).concat("...").concat(address.slice(address.length - 6, address.length));
 
   return shortAddress;
-}
+} 
