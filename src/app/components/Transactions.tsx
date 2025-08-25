@@ -4,6 +4,8 @@ import { Erc20Abi } from "@/contracts/Erc20.abi"
 import { useAccount } from 'wagmi'
 import { useWriteContract } from 'wagmi'
 import { getAddress, isAddress, parseUnits, zeroAddress } from "viem"
+import { sepolia } from "viem/chains"
+import { SimulateTransfer } from "./Simulate"
 
 
 export const Transactions = () => {
@@ -63,11 +65,12 @@ export const Transactions = () => {
         ...Erc20Abi,
         functionName: 'transfer',
         args: [getAddress(toAddress), transferAmount],
+        chainId: sepolia.id,
       })
     } catch (ex) {
       console.log(ex)
     }
-  } 
+  }
 
   return (
     <div className="box-border">
@@ -92,6 +95,7 @@ export const Transactions = () => {
         <button disabled={!account.isConnected || isPending} onClick={() => transferTo()}>
           Transferir
         </button>
+        {/* <SimulateTransfer toAddress={getAddress(toAddress)} amount={transferAmount} /> */}
       </div>
     </div>    
   )

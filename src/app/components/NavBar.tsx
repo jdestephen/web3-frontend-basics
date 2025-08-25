@@ -1,3 +1,5 @@
+'use client'
+
 import { useAccount, useConnect } from 'wagmi';
 import { disconnect } from '@wagmi/core';
 

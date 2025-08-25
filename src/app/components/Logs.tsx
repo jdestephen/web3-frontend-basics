@@ -1,59 +1,33 @@
+'use client'
+
 import { useEffect, useState } from 'react'
 import { useAccount, usePublicClient } from 'wagmi'
 import { formatUnits, getAddress, parseAbiItem } from 'viem';
 import { makeShortAddress, SepoliaChainId } from '../lib/utils';
 import { zeroAddress } from 'viem';
+import { Erc20Abi } from '@/contracts/Erc20.abi';
 
 const eventAbi = parseAbiItem('event Transfer(address indexed from, address indexed to, uint256 tokens)');
 
-export const ReadLogs = () => {
+export const Logs = () => {
   const publicClient = usePublicClient({ chainId: SepoliaChainId })
   const account = useAccount()
   const [transfers, setTransfers] = useState<any>([])
 
-  const loadData = async () => {
+  const subscribeToNewTransfers = (currentTransfers: Array<any>) => { 
     if (publicClient) {
-      const fromAddress = account.address || zeroAddress;
-      const logs = await publicClient.getLogs({
-        address: getAddress("0xDa57a11D954CCBE2e8A1eA142904a6C0F4b333c5"),
-        event: eventAbi,
-        args: {
-          from: fromAddress,
-        },
-        fromBlock: 1n,
-      });
-      
-      const trans = logs.map((log) => {
-        return {
-          from: log.args.from,
-          to: log.args.to,
-          amount: formatUnits(log.args.tokens || 0n, 18),
-          blockNumber: log.blockNumber,
-        }
-      });
-    
-      setTransfers(trans);
-    }
-  }
-
-  useEffect(() => { 
-    loadData();
-  }, [account.address])
-
-  useEffect(() => { 
-    if (publicClient) { 
       const fromAddress = account.address || getAddress("0xDa57a11D954CCBE2e8A1eA142904a6C0F4b333c5");
       const unwatch = publicClient.watchEvent({
-        address: getAddress("0xDa57a11D954CCBE2e8A1eA142904a6C0F4b333c5"),
+        address: getAddress(Erc20Abi.address),
         event: eventAbi,
         args: {
           from: fromAddress,
         },
         fromBlock: 1n,
         onLogs: logs => {
-          const t = [...transfers];
+          const t = [...currentTransfers];
 
-          for (const log in logs) { 
+          for (const log in logs) {
             t.push({
               from: logs[log].args.from,
               to: logs[log].args.to,
@@ -67,9 +41,39 @@ export const ReadLogs = () => {
 
       // Cleanup function to unwatch when the component unmounts
       return () => unwatch();
-    }  
+    }
+  }
+
+  const loadTransfers = async () => {
+    if (publicClient) {
+      const fromAddress = account.address || zeroAddress;
+      const logs = await publicClient.getLogs({
+        address: getAddress(Erc20Abi.address),
+        event: eventAbi,
+        args: {
+          from: fromAddress,
+        },
+        fromBlock: 9062280n,
+      });
+      
+      const trans = logs.map((log) => {
+        return {
+          from: log.args.from,
+          to: log.args.to,
+          amount: formatUnits(log.args.tokens || 0n, 18),
+          blockNumber: log.blockNumber,
+        }
+      });
+    
+      setTransfers(trans);
+      subscribeToNewTransfers(trans);
+      // setTransfersLoaded(true);
+    }
+  }
+
+  useEffect(() => { 
+    loadTransfers();
   }, [account.address])
-  
 
   return (
     <div className="flex flex-row w-[60%]">

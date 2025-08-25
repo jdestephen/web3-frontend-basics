@@ -5,7 +5,7 @@ import { WagmiProvider } from 'wagmi'
 
 import { Data } from './components/Data'
 import { Transactions } from './components/Transactions'
-import { ReadLogs } from './components/ReadLogs'
+import { Logs } from './components/Logs'
 import { config } from './lib/config'
 import { NavBar } from './components/NavBar'
 
@@ -23,7 +23,7 @@ export default function Home() {
               <Data />
               <Transactions />
             </div>
-            <ReadLogs />
+            <Logs />
           </div>
         </div>  
       </QueryClientProvider>
