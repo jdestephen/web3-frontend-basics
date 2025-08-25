@@ -1,22 +1,34 @@
 'use client'
+
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { WagmiProvider } from 'wagmi'
+
 import { Data } from './components/Data'
 import { Transactions } from './components/Transactions'
 import { ReadLogs } from './components/ReadLogs'
+import { config } from './lib/config'
+import { NavBar } from './components/NavBar'
+
+const queryClient = new QueryClient()
 
 
 export default function Home() {
   return (
-    <main className="flex flex-col items-center justify-between p-24">
-      <h1>Web3 Frontend Demo</h1>
-      <div className="flex space-y-10 p-4">
-        <div className="flex min-h-screen flex-col space-y-10 p-4">
-          <Data />
-          <Transactions />
-        </div>
-        <div>
-          <ReadLogs />
-        </div>
-      </div>  
-    </main>
+    <WagmiProvider config={config}>
+      <QueryClientProvider client={queryClient}>
+        <div className="flex min-h-screen flex-col items-center justify-center py-1 px-10">
+          <NavBar />
+          <div>
+            <div className="flex space-y-10 p-1">
+              <div className="flex min-h-screen flex-col space-y-10 p-4">
+                <Data />
+                <Transactions />
+              </div>
+              <ReadLogs />
+            </div>  
+          </div>
+        </div>  
+      </QueryClientProvider>
+    </WagmiProvider>
   )
 }
