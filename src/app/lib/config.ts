@@ -10,7 +10,6 @@ export const config = createConfig({
     [mainnet.id]: http(`https://mainnet.infura.io/v3/${process.env.NEXT_PUBLIC_INFURA_ID}`),
   },
   connectors: [
-    // injected(),
     metaMask(),
   ],
   batch: {

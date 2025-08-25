@@ -4,7 +4,6 @@ import { useEffect, useState } from 'react'
 import { useAccount, usePublicClient } from 'wagmi'
 import { formatUnits, getAddress, parseAbiItem } from 'viem';
 import { makeShortAddress, SepoliaChainId } from '../lib/utils';
-import { zeroAddress } from 'viem';
 import { Erc20Abi } from '@/contracts/Erc20.abi';
 
 const eventAbi = parseAbiItem('event Transfer(address indexed from, address indexed to, uint256 tokens)');
@@ -15,8 +14,8 @@ export const Logs = () => {
   const [transfers, setTransfers] = useState<any>([])
 
   const subscribeToNewTransfers = (currentTransfers: Array<any>) => { 
-    if (publicClient) {
-      const fromAddress = account.address || getAddress("0xDa57a11D954CCBE2e8A1eA142904a6C0F4b333c5");
+    if (publicClient && account.address) {
+      const fromAddress = account.address;
       const unwatch = publicClient.watchEvent({
         address: getAddress(Erc20Abi.address),
         event: eventAbi,
@@ -45,8 +44,8 @@ export const Logs = () => {
   }
 
   const loadTransfers = async () => {
-    if (publicClient) {
-      const fromAddress = account.address || zeroAddress;
+    if (publicClient && account.address) {
+      const fromAddress = account.address ;
       const logs = await publicClient.getLogs({
         address: getAddress(Erc20Abi.address),
         event: eventAbi,

@@ -21,9 +21,9 @@ export default function Home() {
           <div className="flex w-[90%] justify-center">
             <div className="flex min-h-screen flex-col space-y-5 p-4 w-[40%]">
               <Data />
-              <Transactions />
+              {/* <Transactions /> */}
             </div>
-            <Logs />
+            {/* <Logs /> */}
           </div>
         </div>  
       </QueryClientProvider>
