@@ -18,14 +18,12 @@ export default function Home() {
       <QueryClientProvider client={queryClient}>
         <div className="flex min-h-screen flex-col items-center justify-center py-1 px-10">
           <NavBar />
-          <div>
-            <div className="flex space-y-10 p-1">
-              <div className="flex min-h-screen flex-col space-y-10 p-4">
-                <Data />
-                <Transactions />
-              </div>
-              <ReadLogs />
-            </div>  
+          <div className="flex w-[90%] justify-center">
+            <div className="flex min-h-screen flex-col space-y-5 p-4 w-[40%]">
+              <Data />
+              <Transactions />
+            </div>
+            <ReadLogs />
           </div>
         </div>  
       </QueryClientProvider>
